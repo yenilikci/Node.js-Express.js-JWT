@@ -3,8 +3,10 @@ const router = require('express').Router()
 const User = require('../models/User')
 //validation
 const Joi = require('@hapi/joi')
-//şifreleme
+//şifreleme/çözümleme
 const bcrypt = require('bcryptjs')
+//json web token
+const jwt = require('jsonwebtoken')
 
 //validation schema => register
 const validateSchema = Joi.object({
@@ -74,6 +76,12 @@ router.post('/login', async(req,res) => {
 
     //eşleşmez ise
     if(!parolaKontrol) return res.status(400).send('Email ya da parola bilgisi yanlış')
+
+    //bütün adımları geçtik
+    //token oluşturalım
+    const token = jwt.sign({_id:kullanici._id},process.env.TOKEN_SECRET) //data,secret key
+    //res custom header
+    res.header('auth-token',token).send(token)
 
     //artık giriş yapabileceğiz
     res.send('Giriş yaptınız')
