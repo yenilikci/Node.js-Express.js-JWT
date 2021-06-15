@@ -15,6 +15,9 @@ mongoose.connect(process.env.DB_CONNECT,{
     useUnifiedTopology:true
 }, () => {console.log('DB bağlantısı başarılı')})
 
+//json veri bodysi için
+app.use(express.json())
+
 //middleware ile çağıralım, ex: /api/user/register
 app.use('/api/user',authRoute)
 
