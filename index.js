@@ -7,6 +7,8 @@ const app = express()
 const mongoose = require('mongoose')
 //auth route dahil etmek
 const authRoute = require('./routes/auth')
+//posts route
+const postRoute = require('./routes/posts')
 
 dotenv.config()
 
@@ -20,6 +22,8 @@ app.use(express.json())
 
 //middleware ile çağıralım, ex: /api/user/register
 app.use('/api/user',authRoute)
+
+app.use('/api/posts',postRoute)
 
 app.listen(process.env.PORT,() => {
     console.log('server ayakta')
