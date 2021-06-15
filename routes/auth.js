@@ -6,9 +6,15 @@ const Joi = require('@hapi/joi')
 //şifreleme
 const bcrypt = require('bcryptjs')
 
-//validation schema
+//validation schema => register
 const validateSchema = Joi.object({
     isim:Joi.string().min(6).required(),
+    email:Joi.string().min(6).required().email(),
+    parola:Joi.string().min(6).required()
+})
+
+//validation schema => login
+const validateLoginSchema = Joi.object({
     email:Joi.string().min(6).required().email(),
     parola:Joi.string().min(6).required()
 })
@@ -50,6 +56,28 @@ router.post('/register', async (req,res) => {
         res.status(400).send(error)
     }
     
+})
+
+router.post('/login', async(req,res) => {
+    
+    const {error} = validateLoginSchema.validate(req.body)
+
+    if(error) return res.status(400).send(error.details[0].message)
+
+    //ilk önce email bilgisine göre kayıtlar içerisinde aramak
+    const kullanici = await User.findOne({email:req.body.email})
+
+    //email bilgisi eşleşmez ise 404 , message dön
+    if(!kullanici) return res.status(400).send('Email ya da parola bilgisi yanlış')
+
+    const parolaKontrol = await bcrypt.compare(req.body.parola,kullanici.parola)
+
+    //eşleşmez ise
+    if(!parolaKontrol) return res.status(400).send('Email ya da parola bilgisi yanlış')
+
+    //artık giriş yapabileceğiz
+    res.send('Giriş yaptınız')
+
 })
 
 module.exports = router
